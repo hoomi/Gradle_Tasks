@@ -1,0 +1,99 @@
+/**
+    Gradle's life cycle
+    1. Initialization: It is the phase where gradle decides which projects participate in the build
+    2. Configuration: It is the phase where those task objects are assembled to internal objects
+    3. Execution: It is the phase where tasks are executed in order required by their dependency relationships
+
+    Some notes on Gradle:
+    - All tasks on gradle extend DefaultTask similar to all objects in java extend Object class
+    **/
+// Example 2.5
+task hello
+
+hello << {
+    print "Hello, "
+}
+
+hello << {
+    println "world!!"
+}
+
+// Example 2.6
+task initializeDatabase
+
+initializeDatabase << {println "Connect to database"}
+initializeDatabase << {println "Update database schema"}
+// Without the "<<" operator the following line is a configuration block
+// It will be executed at Gradle's configuration lifecycle
+initializeDatabase {println "Configuring database connection"}
+
+task initializeDatabase2
+
+initializeDatabase2 {println "Connect to database"}
+initializeDatabase2 {println "Update database schema"}
+
+initializeDatabase2 {print "Configuring "}
+initializeDatabase2 {println "database connection"}
+
+// Example 2-9
+// dependsOn adds dependency to a task
+task createSchema << { 
+    println "This is createSchema"
+}
+
+task loadTestData {
+    dependsOn createSchema
+}
+
+loadTestData << {
+    println "loadTestData"
+}
+
+task loadTestData2 {
+    dependsOn << createSchema
+}
+
+loadTestData2 << {
+    println "loadTestData2"
+}
+
+task loadTestData3 {
+    dependsOn 'createSchema'
+}
+
+loadTestData3 << {
+    println "loadTestData3"
+}
+
+
+task loadTestData4 << {
+    println "loadTestData4"
+}
+loadTestData4.dependsOn createSchema
+
+task loadTestData5(dependsOn: createSchema) << {
+    println "loadTestData5"
+}
+
+// Example 2-10
+// Declaring several dependecies
+// The order of declaring the dependecy does not make a difference in the order that they are executed
+
+task compileTestData << {
+    println "This is compileTestData"
+}
+
+task loadCompiledTestData {
+    dependsOn << compileTestData
+    dependsOn << createSchema
+}
+
+// Checking the order of the dependecies
+task loadCompiledTestData2  {
+    dependsOn << createSchema
+    dependsOn << compileTestData    
+}
+
+task loadCompiledTestData3 {
+    dependsOn compileTestData, createSchema
+}
