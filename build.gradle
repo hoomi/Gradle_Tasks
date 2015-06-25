@@ -97,3 +97,87 @@ task loadCompiledTestData2  {
 task loadCompiledTestData3 {
     dependsOn compileTestData, createSchema
 }
+
+task loadCompiledTestData4(dependsOn: [createSchema, compileTestData])
+
+task loadCompiledTestData5
+loadCompiledTestData5.dependsOn createSchema, compileTestData
+
+// Example 2-11
+
+task pluginTask << {
+    println "This is pluginTask normal execution"
+}
+
+pluginTask.doFirst {
+    println "createSchema"
+}
+
+pluginTask.doFirst {
+    println "compileData"
+}
+
+// Example 2-13
+
+task setupDatabaseTable << {
+    println "Setting up database"
+}
+
+setupDatabaseTable.doFirst {
+    println "[doFirst]Create Schema"
+}
+
+// Example 2-14
+
+setupDatabaseTable.doFirst {
+    println "[doFirst]Drop old database"
+}
+
+// Example 2-16
+
+task setupDatabaseTests << {
+    println "Setting database tests"
+}
+
+setupDatabaseTests {
+    doFirst {
+        println "[doFirst]Create Schema"
+    }
+
+    doFirst {
+        println "[doFirst]Drop old database"
+    }
+}
+
+// Example 2-17
+
+setupDatabaseTests.doLast {
+    println "[doLast]Load test data"
+}
+
+// Example 2-18
+
+setupDatabaseTests.doLast {
+    println "[doLast]Update database version"
+}
+
+// Example 2-19
+
+task loadTestData6(dependsOn: createSchema) << {
+    println 'Loading Test Data 6'
+}
+
+// In order to set the System.properties['load.data'] we need to add -Dload.data=true to the gradle command
+// from the command line. i.e "gradle -Dload.data=true loadTestData6"
+loadTestData6.onlyIf {
+    System.properties['load.data'] == 'true'
+}
+
+task createSchema2 << {
+    println 'Create Schema 2'
+}
+// The command for this to run is gradle -Dload.data='true' -DHooman=Hooman createSchema2
+createSchema.onlyIf {
+    System.properties['Hooman'] == 'Hooman'
+}
+
