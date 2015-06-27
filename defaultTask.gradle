@@ -1,0 +1,82 @@
+// -b argument to select the build file
+// For this file for example: gradle -b defaultTask.gradle
+// Log levels:
+// DEBUG: They are build level logs which are well formatted and are suppressed at build time (they can appear using -d or --debug)
+// INFO: They are lower volume build time messages that may be optional during build time
+// LIFECYCLE: These messages are usually from gradle itself. These are the messages that appear without using -q  or --quiet with gradle
+// WARN: They are messages which warn the user of potential problems.
+// QUIET: These are messages that would appear with -q --quiet option (System.out.println is directed to this level)(WARN messages are not shown)
+// ERROR: The ciritical messages about the build. (System.out.println messages do not appear when in this mode)
+// Example 2-21
+apply plugin: 'java'
+
+// It returns didWork as zero as there was not any file to be compiled
+task emailMe(dependsOn: compileJava) << {
+    if (tasks.compileJava.didWork) {
+        println 'Sending An Email Announcing the Success'
+    } else {
+        println 'Sending An Email Announcing the Failure'
+    }
+}
+
+// Example of success story
+task successTask << {
+    println 'This is a success story'
+    didWork = true
+}
+
+task announcingSuccess(dependsOn: successTask) << {
+    if (tasks.successTask.didWork) {
+        println 'Yeah!!!!!!'
+    } else {
+        println 'No!!!!!!!'
+    }
+}
+
+
+// Enabled
+// Examp;e 2-23
+task templates(dependsOn: successTask) << {
+    println "This is templates"
+}
+
+task sendEmails(dependsOn: templates) << {
+    println 'Sending emails'
+}
+
+templates.enabled = false
+
+
+// Exampale 2-25
+// We need to use "" need to be used so that ${path} works
+// It does not work with ''
+task echoPath << {
+        println "The path of this is task is ${path}"
+}
+
+// Example 2-29
+task logLevel << {
+    def levels = [ 
+    'DEBUG',
+    'INFO',
+    'WARN',
+    'QUIET',
+    'LIFECYCLE',
+    'ERROR'
+    ]
+    levels.each {level ->
+        // This is used to set the logging level during a task 
+        logging.level = level
+        def logMessage = "SETTING LogLevel = ${level}"
+        logger.error logMessage
+        logger.error '-' * logMessage.size()
+        logger.debug 'DEBUG ENABLED'
+        logger.info 'INFO ENABLED'
+        logger.lifecycle 'LIFECYCLE ENABLED'
+        logger.warn 'WARN ENABLED'
+        logger.quiet 'QUIET ENABLED'
+        logger.error 'ERROR ENABLED'
+        println ' THIS IS println OUTPUT'
+        logger.error '.'
+    }
+}
