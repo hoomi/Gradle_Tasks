@@ -11,7 +11,7 @@
 apply plugin: 'java'
 
 // It returns didWork as zero as there was not any file to be compiled
-task emailMe(dependsOn: compileJava) << {
+task emailMe(dependsOn: compileJava, description: 'It sends an imaginary email') << {
     if (tasks.compileJava.didWork) {
         println 'Sending An Email Announcing the Success'
     } else {
@@ -20,12 +20,12 @@ task emailMe(dependsOn: compileJava) << {
 }
 
 // Example of success story
-task successTask << {
+task successTask(description: 'It sets didWork to true') << {
     println 'This is a success story'
     didWork = true
 }
 
-task announcingSuccess(dependsOn: successTask) << {
+task announcingSuccess(dependsOn: successTask, description: 'It announces the succesful task result') << {
     if (tasks.successTask.didWork) {
         println 'Yeah!!!!!!'
     } else {
@@ -36,12 +36,16 @@ task announcingSuccess(dependsOn: successTask) << {
 
 // Enabled
 // Examp;e 2-23
-task templates(dependsOn: successTask) << {
+task templates(dependsOn: successTask, description: 'It prints out templates') << {
     println "This is templates"
 }
 
 task sendEmails(dependsOn: templates) << {
     println 'Sending emails'
+}
+
+sendEmails {
+    description = 'This task is sending imaginary emails to everyone'
 }
 
 templates.enabled = false
@@ -50,7 +54,7 @@ templates.enabled = false
 // Exampale 2-25
 // We need to use "" need to be used so that ${path} works
 // It does not work with ''
-task echoPath << {
+task echoPath(description: 'It echoes the path of the task being executed') << {
         println "The path of this is task is ${path}"
 }
 
@@ -79,4 +83,8 @@ task logLevel << {
         println ' THIS IS println OUTPUT'
         logger.error '.'
     }
+}
+
+task tempDirectory(description: 'It prints out the temporary directory path') << {
+    println "The temp directory is ${temporaryDir}"
 }
