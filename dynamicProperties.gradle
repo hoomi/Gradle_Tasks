@@ -1,0 +1,25 @@
+// Dynamic properties are depricated now. We use external properties now instead
+// One way of defining a custom property
+class CustomTask extends DefaultTask {
+    String[] filesManifest
+}
+
+task copyFiles(type: CustomTask) {
+    // Find files from wherever, copy them
+    // (then  hardcode  a list of files for illustration)
+    filesManifest = ['data.csv','config.json']
+}
+
+task createArtifact(dependsOn:copyFiles) << {
+    println "FILES IN MANIFEST : ${copyFiles.filesManifest}"
+}
+
+// Second way of defining a custom property
+task copyFiles2 {
+    ext.fileManifest = ['data.csv','config.json']
+}
+
+task createArtifact2 << {
+
+    println "FILES IN MANIFEST : ${tasks.copyFiles2.fileManifest}"
+}
