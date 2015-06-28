@@ -20,6 +20,13 @@ task copyFiles2 {
 }
 
 task createArtifact2 << {
-
     println "FILES IN MANIFEST : ${tasks.copyFiles2.fileManifest}"
+}
+
+
+// Example 2-33
+task copyDirectory(type: Copy) {
+    from 'resources'
+    into 'copyResources'
+    include '**/*.xml', '**/*.txt','**/*.properties'
 }
