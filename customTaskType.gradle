@@ -1,0 +1,46 @@
+task createSqlDatabase(type: MySqlTask) {
+    // sql = 'CREATE DATABASE IF NOT EXISTS example'
+    openDatabase = true
+}
+
+task createUser(type: MySqlTask, dependsOn: createSqlDatabase) {
+    // sql = "GRANT ALL PRIVILAGES ON example.* TO exampleuser@localhost IDENTIFIED BY 'passwOrd'"
+}
+
+task createTable(type: MySqlTask, dependsOn: createUser) {
+    // username = 'exampleuser'
+    // password = 'passwOrd'
+    // database = 'example'
+    sql = 'CREATE TABLE IF NOT EXISTS users (id BIG INTEGER PRIMARY KEY,username VARCHAR(100))'
+}
+
+class MySqlTask extends DefaultTask {
+    def sql
+    def fileName = "test.db"
+    def openDatabase
+    def username = 'root'
+    def password = 'password'
+    def database
+    def port = 3306
+    def host = 'localhost'
+
+    @TaskAction
+    def runQuery() {
+        def cmd 
+        // if (database) {
+        //     cmd = "mysql -u ${username} -p ${password} -h ${host} -P ${port}  ${database}  -e"
+        // } else {
+        //     cmd = "mysql -u ${username} -p ${password} -h ${host} -P ${port} -e"
+        // }
+        if (openDatabase) {
+            cmd = "sqlite3 ${fileName}"
+        } else {
+            cmd = "sqlite3 ${fileName} -cmd ${sql}"
+        }
+        logger.info "cmd is: ${cmd}"
+        project.exec {
+            commandLine = cmd.split().toList() + sql
+        }
+    }
+
+}

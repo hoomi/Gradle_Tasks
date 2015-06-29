@@ -27,6 +27,21 @@ task createArtifact2 << {
 // Example 2-33
 task copyDirectory(type: Copy) {
     from 'resources'
-    into 'copyResources'
+    // into 'copyResources'
+    into "${buildDir}/copyResources"
     include '**/*.xml', '**/*.txt','**/*.properties'
+}
+
+// Example 2-34
+apply plugin: 'java'
+
+task customJar(type: Jar) << {
+    manifest {
+        attributes firstKey: 'firstValue', secondKey:'secondValue'
+    }
+    archiveName = 'hello.jar'
+    destinationDir = file("${buildDir}/jars")
+    // This is deprecated
+    // from sourceSets.main.classes
+    from "resources/"
 }
